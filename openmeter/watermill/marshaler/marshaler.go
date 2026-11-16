@@ -125,6 +125,7 @@ func (m *marshaler) Unmarshal(msg *message.Message, v interface{}) error {
 	if !ok {
 		return errors.New("invalid event type")
 	}
+
 	_, err := DecodeCloudEvent(msg, ev)
 
 	return err
