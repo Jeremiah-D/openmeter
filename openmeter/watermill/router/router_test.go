@@ -9,9 +9,11 @@ import (
 
 	"github.com/ThreeDotsLabs/watermill"
 	"github.com/ThreeDotsLabs/watermill/message"
+	"github.com/ThreeDotsLabs/watermill/message/router/middleware"
 	"github.com/ThreeDotsLabs/watermill/pubsub/gochannel"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/require"
 	sdkmetric "go.opentelemetry.io/otel/sdk/metric"
 	sdktrace "go.opentelemetry.io/otel/sdk/trace"
 
@@ -263,4 +265,52 @@ func TestDefaultRouter(t *testing.T) {
 			assert.NoError(t, router.Close())
 		})
 	}
+}
+
+func TestDefaultRouterCloseDuringDelivery(t *testing.T) {
+	// Given a handler still processing a message when the router shuts down.
+	pubsub := gochannel.NewGoChannel(gochannel.Config{}, watermill.NopLogger{})
+	t.Cleanup(func() { assert.NoError(t, pubsub.Close()) })
+
+	router, err := NewDefaultRouter(Options{
+		Subscriber:  pubsub,
+		Publisher:   pubsub,
+		Logger:      slog.New(slog.DiscardHandler),
+		MetricMeter: sdkmetric.NewMeterProvider().Meter("router_test"),
+		Tracer:      sdktrace.NewTracerProvider().Tracer("router_test"),
+		Config: config.ConsumerConfiguration{
+			ConsumerGroupName: "test-group",
+			Retry:             config.RetryConfiguration{InitialInterval: time.Millisecond, MaxInterval: time.Millisecond},
+			DLQ:               config.DLQConfiguration{Topic: "test-dlq"},
+		},
+	})
+	require.NoError(t, err)
+
+	started := make(chan *message.Message, 1)
+	router.AddConsumerHandler("blocking", "input", pubsub, func(msg *message.Message) error {
+		started <- msg
+		<-msg.Context().Done()
+
+		return errors.New("interrupted during processing")
+	})
+
+	done := make(chan error, 1)
+	go func() { done <- router.Run(t.Context()) }()
+	<-router.Running()
+
+	require.NoError(t, pubsub.Publish("input", message.NewMessage(watermill.NewUUID(), nil)))
+	delivery := <-started
+
+	// When Close cancels the delivery, the failing handler must be able to return.
+	require.NoError(t, router.Close())
+	require.NoError(t, <-done)
+
+	// Then the broker can redeliver. No DLQ publish was attempted.
+	select {
+	case <-delivery.Nacked():
+	default:
+		t.Fatal("interrupted delivery was not nacked")
+	}
+
+	require.NotContains(t, delivery.Metadata, middleware.ReasonForPoisonedKey)
 }
