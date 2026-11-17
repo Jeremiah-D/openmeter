@@ -1992,6 +1992,67 @@ export const notificationEventV1InvoiceAppExternalIds = z
     'InvoiceAppExternalIds contains the external IDs of the invoice in other apps such as Stripe.',
   )
 
+export const notificationEventTypeSummary = z
+  .object({
+    type: z
+      .string()
+
+      .describe(
+        'The canonical event type, `v<version>.<name>`, for example `v1.billing.invoice.created`.',
+      ),
+    description: z
+      .string()
+
+      .describe(
+        'What the event type means, including the legacy name it replaces, if any.',
+      ),
+    deprecatedBy: z
+      .string()
+      .optional()
+
+      .describe(
+        'The event type that replaces this one. Deprecated event types stay usable. Absent when the event type is not deprecated.',
+      ),
+  })
+
+  .describe(
+    'A versioned kind of notification event. Its contract covers the payload and, when rules can produce it, the rule configuration.',
+  )
+
+export const notificationEventTypeDefinition = z
+  .object({
+    type: z
+      .string()
+
+      .describe(
+        'The canonical event type, `v<version>.<name>`, for example `v1.billing.invoice.created`.',
+      ),
+    description: z
+      .string()
+
+      .describe(
+        'What the event type means, including the legacy name it replaces, if any.',
+      ),
+    deprecatedBy: z
+      .string()
+      .optional()
+
+      .describe(
+        'The event type that replaces this one. Deprecated event types stay usable. Absent when the event type is not deprecated.',
+      ),
+    payloadJsonSchema: z
+      .record(z.string(), z.unknown())
+      .describe('The JSON Schema (draft 2020-12) of the event payload.'),
+    ruleConfigJsonSchema: z
+      .record(z.string(), z.unknown())
+      .optional()
+
+      .describe(
+        'The JSON Schema (draft 2020-12) of the rule configuration. Absent when no rule can produce the event type.',
+      ),
+  })
+  .describe('A notification event type with the JSON Schemas of its contract.')
+
 export const queryFilterInteger = z
   .object({
     eq: z
@@ -2773,6 +2834,12 @@ export const listLlmCostPricesParamsFilter = z
     source: stringFieldFilter.optional(),
   })
   .describe('Filter options for listing LLM cost prices.')
+
+export const listNotificationEventTypesParamsFilter = z
+  .object({
+    type: stringFieldFilter.optional(),
+  })
+  .describe('Filter options for listing notification event types.')
 
 export const labelsFieldFilter = z
   .record(z.string(), stringFieldFilter)
@@ -6083,6 +6150,13 @@ export const costBasisPagePaginatedResponse = z
   })
   .describe('Page paginated response.')
 
+export const notificationEventTypeSummaryPagePaginatedResponse = z
+  .object({
+    data: z.array(notificationEventTypeSummary),
+    meta: paginatedMeta,
+  })
+  .describe('Page paginated response.')
+
 export const meterQueryFilters = z
   .object({
     dimensions: z
@@ -9211,7 +9285,7 @@ export const entitlementBalanceThresholdTriggeredV1Payload = z
   })
 
   .describe(
-    'Payload of `v1.entitlement.balance_threshold.triggered`, the legacy `entitlements.balance.threshold` Event type.',
+    "A metered entitlement's balance crossed one of the thresholds configured on the Rule. The payload carries the entitlement, its feature, subject, customer and value, and the threshold that was crossed. Legacy name: `entitlements.balance.threshold`.",
   )
 
 export const entitlementUsagePeriodResetV1Payload = z
@@ -9224,7 +9298,7 @@ export const entitlementUsagePeriodResetV1Payload = z
   })
 
   .describe(
-    'Payload of `v1.entitlement.usage_period.reset`, the legacy `entitlements.reset` Event type.',
+    "A metered entitlement's usage period was reset. The payload carries the entitlement, its feature, subject, customer and value. Legacy name: `entitlements.reset`.",
   )
 
 export const notificationEventV1BalanceThresholdPayloadData = z
@@ -10459,7 +10533,7 @@ export const invoiceCreatedV1Payload = z
   })
 
   .describe(
-    'Payload of `v1.billing.invoice.created`, the legacy `invoice.created` Event type: the invoice as it was created.',
+    'An invoice was created. The payload is the invoice as it was created. Legacy name: `invoice.created`.',
   )
 
 export const invoiceUpdatedV1Payload = z
@@ -10561,7 +10635,7 @@ export const invoiceUpdatedV1Payload = z
   })
 
   .describe(
-    'Payload of `v1.billing.invoice.updated`, the legacy `invoice.updated` Event type: the invoice after the update.',
+    'An invoice was updated. The payload is the invoice after the update. Legacy name: `invoice.updated`.',
   )
 
 export const notificationEventV1Invoice = z
@@ -12302,6 +12376,38 @@ export const resendBillingNotificationEventPathParams = z.object({
 
 export const resendBillingNotificationEventBody =
   resendBillingNotificationEventRequest
+
+export const listBillingNotificationEventTypesQueryParams = z.object({
+  page: z
+    .object({
+      size: z.coerce
+        .number()
+        .int()
+        .optional()
+        .describe('The number of items to include per page.'),
+      number: z.coerce.number().int().optional().describe('The page number.'),
+    })
+    .optional()
+    .describe('Determines which page of the collection to retrieve.'),
+  filter: listNotificationEventTypesParamsFilter.optional(),
+})
+
+export const listBillingNotificationEventTypesResponse = z.object({
+  data: z.array(notificationEventTypeSummary),
+  meta: paginatedMeta,
+})
+
+export const getBillingNotificationEventTypePathParams = z.object({
+  notificationEventType: z.coerce
+    .string()
+
+    .describe(
+      'The canonical event type, for example `v1.billing.invoice.created`.',
+    ),
+})
+
+export const getBillingNotificationEventTypeResponse =
+  notificationEventTypeDefinition
 
 export const labelsWire = z
   .record(z.string(), z.string())
@@ -14294,6 +14400,67 @@ export const notificationEventV1InvoiceAppExternalIdsWire = z
     'InvoiceAppExternalIds contains the external IDs of the invoice in other apps such as Stripe.',
   )
 
+export const notificationEventTypeSummaryWire = z
+  .strictObject({
+    type: z
+      .string()
+
+      .describe(
+        'The canonical event type, `v<version>.<name>`, for example `v1.billing.invoice.created`.',
+      ),
+    description: z
+      .string()
+
+      .describe(
+        'What the event type means, including the legacy name it replaces, if any.',
+      ),
+    deprecated_by: z
+      .string()
+      .optional()
+
+      .describe(
+        'The event type that replaces this one. Deprecated event types stay usable. Absent when the event type is not deprecated.',
+      ),
+  })
+
+  .describe(
+    'A versioned kind of notification event. Its contract covers the payload and, when rules can produce it, the rule configuration.',
+  )
+
+export const notificationEventTypeDefinitionWire = z
+  .strictObject({
+    type: z
+      .string()
+
+      .describe(
+        'The canonical event type, `v<version>.<name>`, for example `v1.billing.invoice.created`.',
+      ),
+    description: z
+      .string()
+
+      .describe(
+        'What the event type means, including the legacy name it replaces, if any.',
+      ),
+    deprecated_by: z
+      .string()
+      .optional()
+
+      .describe(
+        'The event type that replaces this one. Deprecated event types stay usable. Absent when the event type is not deprecated.',
+      ),
+    payload_json_schema: z
+      .record(z.string(), z.unknown())
+      .describe('The JSON Schema (draft 2020-12) of the event payload.'),
+    rule_config_json_schema: z
+      .record(z.string(), z.unknown())
+      .optional()
+
+      .describe(
+        'The JSON Schema (draft 2020-12) of the rule configuration. Absent when no rule can produce the event type.',
+      ),
+  })
+  .describe('A notification event type with the JSON Schemas of its contract.')
+
 export const queryFilterIntegerWire = z
   .strictObject({
     eq: z
@@ -15074,6 +15241,12 @@ export const listLlmCostPricesParamsFilterWire = z
     source: stringFieldFilterWire.optional(),
   })
   .describe('Filter options for listing LLM cost prices.')
+
+export const listNotificationEventTypesParamsFilterWire = z
+  .strictObject({
+    type: stringFieldFilterWire.optional(),
+  })
+  .describe('Filter options for listing notification event types.')
 
 export const labelsFieldFilterWire = z
   .record(z.string(), stringFieldFilterWire)
@@ -18370,6 +18543,13 @@ export const costBasisPagePaginatedResponseWire = z
   })
   .describe('Page paginated response.')
 
+export const notificationEventTypeSummaryPagePaginatedResponseWire = z
+  .strictObject({
+    data: z.array(notificationEventTypeSummaryWire),
+    meta: paginatedMetaWire,
+  })
+  .describe('Page paginated response.')
+
 export const meterQueryFiltersWire = z
   .strictObject({
     dimensions: z
@@ -21563,7 +21743,7 @@ export const entitlementBalanceThresholdTriggeredV1PayloadWire = z
   })
 
   .describe(
-    'Payload of `v1.entitlement.balance_threshold.triggered`, the legacy `entitlements.balance.threshold` Event type.',
+    "A metered entitlement's balance crossed one of the thresholds configured on the Rule. The payload carries the entitlement, its feature, subject, customer and value, and the threshold that was crossed. Legacy name: `entitlements.balance.threshold`.",
   )
 
 export const entitlementUsagePeriodResetV1PayloadWire = z
@@ -21576,7 +21756,7 @@ export const entitlementUsagePeriodResetV1PayloadWire = z
   })
 
   .describe(
-    'Payload of `v1.entitlement.usage_period.reset`, the legacy `entitlements.reset` Event type.',
+    "A metered entitlement's usage period was reset. The payload carries the entitlement, its feature, subject, customer and value. Legacy name: `entitlements.reset`.",
   )
 
 export const notificationEventV1BalanceThresholdPayloadDataWire = z
@@ -22835,7 +23015,7 @@ export const invoiceCreatedV1PayloadWire = z
   })
 
   .describe(
-    'Payload of `v1.billing.invoice.created`, the legacy `invoice.created` Event type: the invoice as it was created.',
+    'An invoice was created. The payload is the invoice as it was created. Legacy name: `invoice.created`.',
   )
 
 export const invoiceUpdatedV1PayloadWire = z
@@ -22949,7 +23129,7 @@ export const invoiceUpdatedV1PayloadWire = z
   })
 
   .describe(
-    'Payload of `v1.billing.invoice.updated`, the legacy `invoice.updated` Event type: the invoice after the update.',
+    'An invoice was updated. The payload is the invoice after the update. Legacy name: `invoice.updated`.',
   )
 
 export const notificationEventV1InvoiceWire = z
@@ -24858,3 +25038,35 @@ export const resendBillingNotificationEventPathParamsWire = z.object({
 
 export const resendBillingNotificationEventBodyWire =
   resendBillingNotificationEventRequestWire
+
+export const listBillingNotificationEventTypesQueryParamsWire = z.object({
+  page: z
+    .strictObject({
+      size: z.coerce
+        .number()
+        .int()
+        .optional()
+        .describe('The number of items to include per page.'),
+      number: z.coerce.number().int().optional().describe('The page number.'),
+    })
+    .optional()
+    .describe('Determines which page of the collection to retrieve.'),
+  filter: listNotificationEventTypesParamsFilterWire.optional(),
+})
+
+export const listBillingNotificationEventTypesResponseWire = z.strictObject({
+  data: z.array(notificationEventTypeSummaryWire),
+  meta: paginatedMetaWire,
+})
+
+export const getBillingNotificationEventTypePathParamsWire = z.object({
+  notificationEventType: z.coerce
+    .string()
+
+    .describe(
+      'The canonical event type, for example `v1.billing.invoice.created`.',
+    ),
+})
+
+export const getBillingNotificationEventTypeResponseWire =
+  notificationEventTypeDefinitionWire
