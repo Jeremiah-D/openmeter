@@ -18,6 +18,10 @@ removed, B's attempt count is persisted, and C waits for a later drain. Other
 transactions can progress. Once B reaches `maxAttempts`, it is logged and retained
 for inspection, skipped by future drains, and C can proceed. Raising the limit makes retained rows eligible again.
 
+The RTE worker drains a source transaction only when every remaining row is a calculation
+update. While any other event remains, regular workers own delivery and its retry budget.
+This preserves ordering even when the workers have different retry limits.
+
 Acknowledged events are **hard-deleted**. A crash or failed database commit can
 resend them, so consumers must tolerate duplicates. Failed-attempt counts survive
 successful drain commits; crashes or database failures can cause extra attempts.

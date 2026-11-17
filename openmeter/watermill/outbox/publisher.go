@@ -26,8 +26,11 @@ type Config struct {
 
 	// OutboxTopics lists topics persisted before delivery; all others publish directly.
 	OutboxTopics []string
-	Logger       *slog.Logger
-	DrainLimit   int
+	// DrainEventType restricts delivery to transactions containing only this
+	// CloudEvents type. Empty allows all transactions. Enqueue is unaffected.
+	DrainEventType string
+	Logger         *slog.Logger
+	DrainLimit     int
 	// DrainTimeout is a soft budget checked before sends; in-flight work can finish.
 	DrainTimeout     time.Duration
 	DrainConcurrency int
@@ -203,7 +206,10 @@ func (p *Publisher) drain(ctx context.Context) error {
 			client := db.NewTxClientFromRawConfig(ctx, *tx.GetConfig()).Client()
 			// Claim only a transaction's first pending row. Its lock prevents
 			// other workers from claiming any sibling while this batch is sent.
-			query := pendingTransactionQuery{Topics: p.cfg.OutboxTopics, MaxAttempts: p.cfg.MaxAttempts, ExcludedTransactions: failedTransactions}
+			query := pendingTransactionQuery{
+				Topics: p.cfg.OutboxTopics, MaxAttempts: p.cfg.MaxAttempts,
+				ExcludedTransactions: failedTransactions, EventType: p.cfg.DrainEventType,
+			}
 			head, err := client.EventOutbox.Query().
 				Where(query.Apply).
 				Order(eventoutbox.ByID()).
