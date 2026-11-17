@@ -26,13 +26,17 @@ type Config struct {
 
 	// OutboxTopics lists topics persisted before delivery; all others publish directly.
 	OutboxTopics []string
+
 	// DrainEventType restricts delivery to transactions containing only this
 	// CloudEvents type. Empty allows all transactions. Enqueue is unaffected.
 	DrainEventType string
-	Logger         *slog.Logger
-	DrainLimit     int
+
+	Logger     *slog.Logger
+	DrainLimit int
+
 	// DrainTimeout is a soft budget checked before sends; in-flight work can finish.
-	DrainTimeout     time.Duration
+	DrainTimeout time.Duration
+
 	DrainConcurrency int
 	RetryInterval    time.Duration
 	MaxAttempts      int
