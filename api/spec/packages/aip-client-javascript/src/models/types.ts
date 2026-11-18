@@ -5264,6 +5264,21 @@ export interface SubscriptionBase {
    * - Custom date (customer-specified day)
    */
   billingAnchor: Date
+  /**
+   * When billing starts for the subscription. Nothing is billed for service before
+   * this time, while access, entitlements and metering start with the subscription.
+   * Use it when the time before was already billed elsewhere, for example when
+   * importing a subscription from another billing system.
+   *
+   * It cannot be before the start of the subscription and cannot be changed later.
+   * On subscriptions billed through invoice lines it must be the start of a billing
+   * period. If not provided, billing starts with the subscription.
+   *
+   * When billing starts inside a billing period, we recommend enabling price
+   * pro-rating (`prorate_prices`) on the plan. Without it that billing period's
+   * flat fees are billed in full.
+   */
+  billingStartsAt?: Date
   /** The status of the subscription. */
   status: 'active' | 'inactive' | 'canceled' | 'scheduled'
   /**
@@ -9150,6 +9165,21 @@ export interface Subscription {
    * - Custom date (customer-specified day)
    */
   billingAnchor: Date
+  /**
+   * When billing starts for the subscription. Nothing is billed for service before
+   * this time, while access, entitlements and metering start with the subscription.
+   * Use it when the time before was already billed elsewhere, for example when
+   * importing a subscription from another billing system.
+   *
+   * It cannot be before the start of the subscription and cannot be changed later.
+   * On subscriptions billed through invoice lines it must be the start of a billing
+   * period. If not provided, billing starts with the subscription.
+   *
+   * When billing starts inside a billing period, we recommend enabling price
+   * pro-rating (`prorate_prices`) on the plan. Without it that billing period's
+   * flat fees are billed in full.
+   */
+  billingStartsAt?: Date
   /** The status of the subscription. */
   status: 'active' | 'inactive' | 'canceled' | 'scheduled'
   /**
@@ -9176,6 +9206,21 @@ export interface Subscription {
 
 export interface SubscriptionCreate {
   labels?: Labels
+  /**
+   * When billing starts for the subscription. Nothing is billed for service before
+   * this time, while access, entitlements and metering start with the subscription.
+   * Use it when the time before was already billed elsewhere, for example when
+   * importing a subscription from another billing system.
+   *
+   * It cannot be before the start of the subscription and cannot be changed later.
+   * On subscriptions billed through invoice lines it must be the start of a billing
+   * period. If not provided, billing starts with the subscription.
+   *
+   * When billing starts inside a billing period, we recommend enabling price
+   * pro-rating (`prorate_prices`) on the plan. Without it that billing period's
+   * flat fees are billed in full.
+   */
+  billingStartsAt?: Date
   /**
    * Settlement mode for billing.
    *
@@ -9239,6 +9284,21 @@ export interface SubscriptionCreate {
 /** Request for changing a subscription. */
 export interface SubscriptionChange {
   labels?: Labels
+  /**
+   * When billing starts for the subscription. Nothing is billed for service before
+   * this time, while access, entitlements and metering start with the subscription.
+   * Use it when the time before was already billed elsewhere, for example when
+   * importing a subscription from another billing system.
+   *
+   * It cannot be before the start of the subscription and cannot be changed later.
+   * On subscriptions billed through invoice lines it must be the start of a billing
+   * period. If not provided, billing starts with the subscription.
+   *
+   * When billing starts inside a billing period, we recommend enabling price
+   * pro-rating (`prorate_prices`) on the plan. Without it that billing period's
+   * flat fees are billed in full.
+   */
+  billingStartsAt?: Date
   /**
    * Settlement mode for billing.
    *
@@ -11257,6 +11317,21 @@ export interface SubscriptionBaseInput {
    * - Custom date (customer-specified day)
    */
   billingAnchor: Date
+  /**
+   * When billing starts for the subscription. Nothing is billed for service before
+   * this time, while access, entitlements and metering start with the subscription.
+   * Use it when the time before was already billed elsewhere, for example when
+   * importing a subscription from another billing system.
+   *
+   * It cannot be before the start of the subscription and cannot be changed later.
+   * On subscriptions billed through invoice lines it must be the start of a billing
+   * period. If not provided, billing starts with the subscription.
+   *
+   * When billing starts inside a billing period, we recommend enabling price
+   * pro-rating (`prorate_prices`) on the plan. Without it that billing period's
+   * flat fees are billed in full.
+   */
+  billingStartsAt?: Date
   /** The status of the subscription. */
   status: 'active' | 'inactive' | 'canceled' | 'scheduled'
   /**
@@ -13001,6 +13076,21 @@ export interface SubscriptionInput {
    * - Custom date (customer-specified day)
    */
   billingAnchor: Date
+  /**
+   * When billing starts for the subscription. Nothing is billed for service before
+   * this time, while access, entitlements and metering start with the subscription.
+   * Use it when the time before was already billed elsewhere, for example when
+   * importing a subscription from another billing system.
+   *
+   * It cannot be before the start of the subscription and cannot be changed later.
+   * On subscriptions billed through invoice lines it must be the start of a billing
+   * period. If not provided, billing starts with the subscription.
+   *
+   * When billing starts inside a billing period, we recommend enabling price
+   * pro-rating (`prorate_prices`) on the plan. Without it that billing period's
+   * flat fees are billed in full.
+   */
+  billingStartsAt?: Date
   /** The status of the subscription. */
   status: 'active' | 'inactive' | 'canceled' | 'scheduled'
   /**
@@ -13027,6 +13117,21 @@ export interface SubscriptionInput {
 
 export interface SubscriptionCreateInput {
   labels?: Labels
+  /**
+   * When billing starts for the subscription. Nothing is billed for service before
+   * this time, while access, entitlements and metering start with the subscription.
+   * Use it when the time before was already billed elsewhere, for example when
+   * importing a subscription from another billing system.
+   *
+   * It cannot be before the start of the subscription and cannot be changed later.
+   * On subscriptions billed through invoice lines it must be the start of a billing
+   * period. If not provided, billing starts with the subscription.
+   *
+   * When billing starts inside a billing period, we recommend enabling price
+   * pro-rating (`prorate_prices`) on the plan. Without it that billing period's
+   * flat fees are billed in full.
+   */
+  billingStartsAt?: Date
   /**
    * Settlement mode for billing.
    *
@@ -13090,6 +13195,21 @@ export interface SubscriptionCreateInput {
 /** Request for changing a subscription. */
 export interface SubscriptionChangeInput {
   labels?: Labels
+  /**
+   * When billing starts for the subscription. Nothing is billed for service before
+   * this time, while access, entitlements and metering start with the subscription.
+   * Use it when the time before was already billed elsewhere, for example when
+   * importing a subscription from another billing system.
+   *
+   * It cannot be before the start of the subscription and cannot be changed later.
+   * On subscriptions billed through invoice lines it must be the start of a billing
+   * period. If not provided, billing starts with the subscription.
+   *
+   * When billing starts inside a billing period, we recommend enabling price
+   * pro-rating (`prorate_prices`) on the plan. Without it that billing period's
+   * flat fees are billed in full.
+   */
+  billingStartsAt?: Date
   /**
    * Settlement mode for billing.
    *

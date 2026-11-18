@@ -704,6 +704,9 @@ func (_u *SubscriptionUpdate) sqlSave(ctx context.Context) (_node int, err error
 	if value, ok := _u.mutation.BillingAnchor(); ok {
 		_spec.SetField(subscription.FieldBillingAnchor, field.TypeTime, value)
 	}
+	if _u.mutation.BillingStartsAtCleared() {
+		_spec.ClearField(subscription.FieldBillingStartsAt, field.TypeTime)
+	}
 	if value, ok := _u.mutation.BillingCadence(); ok {
 		_spec.SetField(subscription.FieldBillingCadence, field.TypeString, value)
 	}
@@ -1916,6 +1919,9 @@ func (_u *SubscriptionUpdateOne) sqlSave(ctx context.Context) (_node *Subscripti
 	}
 	if value, ok := _u.mutation.BillingAnchor(); ok {
 		_spec.SetField(subscription.FieldBillingAnchor, field.TypeTime, value)
+	}
+	if _u.mutation.BillingStartsAtCleared() {
+		_spec.ClearField(subscription.FieldBillingStartsAt, field.TypeTime)
 	}
 	if value, ok := _u.mutation.BillingCadence(); ok {
 		_spec.SetField(subscription.FieldBillingCadence, field.TypeString, value)

@@ -6526,6 +6526,7 @@ export const subscriptionBase = z
     billingCadence: iso8601Duration,
     proRatingConfig: subscriptionProRatingConfig.optional(),
     billingAnchor: dateTime,
+    billingStartsAt: dateTime.optional(),
     status: subscriptionStatus,
     settlementMode: settlementMode.optional(),
   })
@@ -10156,6 +10157,7 @@ export const subscription = z
     billingCadence: iso8601Duration,
     proRatingConfig: subscriptionProRatingConfig.optional(),
     billingAnchor: dateTime,
+    billingStartsAt: dateTime.optional(),
     status: subscriptionStatus,
     settlementMode: settlementMode.optional(),
     currentPeriod: closedPeriod.optional(),
@@ -10170,6 +10172,7 @@ export const subscription = z
 
 export const subscriptionCreate = z.object({
   labels: labels.optional(),
+  billingStartsAt: dateTime.optional(),
   settlementMode: settlementMode.optional(),
   customer: z
     .object({
@@ -10212,6 +10215,7 @@ export const subscriptionCreate = z.object({
 export const subscriptionChange = z
   .object({
     labels: labels.optional(),
+    billingStartsAt: dateTime.optional(),
     settlementMode: settlementMode.optional(),
     customer: z
       .object({
@@ -18810,6 +18814,7 @@ export const subscriptionBaseWire = z
     billing_cadence: iso8601DurationWire,
     pro_rating_config: subscriptionProRatingConfigWire.optional(),
     billing_anchor: dateTimeWire,
+    billing_starts_at: dateTimeWire.optional(),
     status: subscriptionStatusWire,
     settlement_mode: settlementModeWire.optional(),
   })
@@ -22520,6 +22525,7 @@ export const subscriptionWire = z
     billing_cadence: iso8601DurationWire,
     pro_rating_config: subscriptionProRatingConfigWire.optional(),
     billing_anchor: dateTimeWire,
+    billing_starts_at: dateTimeWire.optional(),
     status: subscriptionStatusWire,
     settlement_mode: settlementModeWire.optional(),
     current_period: closedPeriodWire.optional(),
@@ -22534,6 +22540,7 @@ export const subscriptionWire = z
 
 export const subscriptionCreateWire = z.strictObject({
   labels: labelsWire.optional(),
+  billing_starts_at: dateTimeWire.optional(),
   settlement_mode: settlementModeWire.optional(),
   customer: z
     .strictObject({
@@ -22576,6 +22583,7 @@ export const subscriptionCreateWire = z.strictObject({
 export const subscriptionChangeWire = z
   .strictObject({
     labels: labelsWire.optional(),
+    billing_starts_at: dateTimeWire.optional(),
     settlement_mode: settlementModeWire.optional(),
     customer: z
       .strictObject({
