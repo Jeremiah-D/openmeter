@@ -5823,6 +5823,7 @@ export const listChargesParamsFilter = z
     servicePeriodFrom: dateTimeFieldFilter.optional(),
     servicePeriodTo: dateTimeFieldFilter.optional(),
     customerId: ulidFieldFilter.optional(),
+    subscriptionId: ulidFieldFilter.optional(),
   })
   .describe('Filter options for listing charges across customers.')
 
@@ -18126,6 +18127,7 @@ export const listChargesParamsFilterWire = z
     service_period_from: dateTimeFieldFilterWire.optional(),
     service_period_to: dateTimeFieldFilterWire.optional(),
     customer_id: ulidFieldFilterWire.optional(),
+    subscription_id: ulidFieldFilterWire.optional(),
   })
   .describe('Filter options for listing charges across customers.')
 
